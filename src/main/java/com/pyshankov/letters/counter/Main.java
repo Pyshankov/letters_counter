@@ -1,5 +1,8 @@
 package com.pyshankov.letters.counter;
 
+import com.pyshankov.letters.counter.map.reduce.CharacterCounterConsumerProducer;
+import com.pyshankov.letters.counter.map.reduce.ReduceConsumer;
+import com.pyshankov.letters.counter.map.reduce.StringProducer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -10,6 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by pyshankov on 25.10.2016.
  */
@@ -18,9 +25,22 @@ public class Main extends Application {
     MyBlockingQueue<String> queue = new MyBlockingQueue<>(1);
 
     public static void main(String[] args) {
-        launch(args);
-    }
 
+        MyBlockingQueue<String> mapQueue = new MyBlockingQueue<>(10);
+        MyBlockingQueue<Map<String,Integer>> reduceQueue = new MyBlockingQueue<>(10);
+        Map<String,Integer> globalResultMap = new HashMap<>();
+
+        CharacterCounterConsumerProducer characterCounterConsumerProducer
+                = new CharacterCounterConsumerProducer(mapQueue,reduceQueue,10);
+        ReduceConsumer consumer = new ReduceConsumer(reduceQueue,globalResultMap,10);
+        StringProducer producer = new StringProducer(mapQueue);
+
+        new Thread(producer).start();
+        new Thread(characterCounterConsumerProducer).start();
+        new Thread(consumer).start();
+
+//        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) {
