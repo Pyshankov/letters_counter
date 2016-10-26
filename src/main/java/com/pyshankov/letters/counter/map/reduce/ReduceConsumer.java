@@ -31,12 +31,12 @@ public class ReduceConsumer implements Runnable{
         while (true){
             Map<String,Integer> result = reduceQueue.poll();
             executor.execute(()->
-                merge(globalResultMap,result)
+                merge(result)
             );
         }
     }
 
-    private static void merge(Map<String,Integer> globalResultMap,Map<String,Integer> map){
+    private  void merge(Map<String,Integer> map){
         System.out.println(globalResultMap);
         for (String character: map.keySet()){
             synchronized (globalResultMap){
