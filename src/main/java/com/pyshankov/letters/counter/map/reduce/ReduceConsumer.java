@@ -38,8 +38,8 @@ public class ReduceConsumer implements Runnable{
 
     private  void merge(Map<String,Integer> map){
         System.out.println(globalResultMap);
+        synchronized (globalResultMap){
         for (String character: map.keySet()){
-            synchronized (globalResultMap){
                 globalResultMap.put(character,globalResultMap.getOrDefault(character,0)+map.get(character));
             }
         }
